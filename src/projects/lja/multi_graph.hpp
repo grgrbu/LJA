@@ -111,6 +111,8 @@ namespace multigraph {
 
     };
 
+    typedef std::unordered_map<int, std::pair<int, int>> deleted_edges_map;
+    
     struct MultiGraph {
         int maxVId = 0;
         int maxEId = 0;
