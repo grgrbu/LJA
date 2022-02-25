@@ -29,9 +29,15 @@ using logging::Logger;
 using std::cout;
 using std::cerr;
 
-void deleteEdgeHaplo(multigraph::MultiGraph &graph, int eid, haplo_map_type &haplotypes) {
+void deleteEdgeHaplo(multigraph::MultiGraph &graph, int eid, haplo_map_type &haplotypes, logging::Logger &logger) {
+    logger.debug() << "Removing " << eid << endl; 
     auto to_merge = graph.deleteEdgeById(eid);
     for (auto p: to_merge){
+        logger.debug() << "new_label " << p.first << endl;
+        for (auto l: p.second) {
+            logger.debug() << l << " ";
+        }
+        logger.debug() << endl;
         HaplotypeStats new_haplo(haplotypes[p.second[0]]);
         new_haplo.label = p.first;
         haplotypes.insert(std::make_pair(p.first, new_haplo));
@@ -40,7 +46,7 @@ void deleteEdgeHaplo(multigraph::MultiGraph &graph, int eid, haplo_map_type &hap
     }
 }
 
-void cleanGraph(multigraph::MultiGraph &graph, char haplo_to_remove, haplo_map_type &haplotypes) {
+void cleanGraph(multigraph::MultiGraph &graph, char haplo_to_remove, haplo_map_type &haplotypes, logging::Logger &logger) {
     bool changed = true;
     size_t MAX_TIP_LENGTH = 1000000;
     size_t tips = 0;
@@ -54,12 +60,12 @@ void cleanGraph(multigraph::MultiGraph &graph, char haplo_to_remove, haplo_map_t
         for (auto eid: eids){
             if (graph.edges.find(eid) == graph.edges.end())
                 continue;
-            std::cout<< "considering " <<eid << " label " << graph.edges[eid]->getLabel() <<endl;
+            logger.debug() << "considering " <<eid << " label " << graph.edges[eid]->getLabel() <<endl;
             if (graph.edges[eid]->isTip()) {
                 std::cout << "is being deleted as tip\n";
                 if (graph.edges[eid]->size() < MAX_TIP_LENGTH) {
                     std::cout << "is deleted as tip\n";
-                    deleteEdgeHaplo(graph, eid, haplotypes);
+                    deleteEdgeHaplo(graph, eid, haplotypes, logger);
 //                    graph.deleteEdgeById(eid);
                     changed = true;
                     tips ++;
@@ -73,10 +79,10 @@ void cleanGraph(multigraph::MultiGraph &graph, char haplo_to_remove, haplo_map_t
                     std::cout << "is deleted as bulge\n";
                     char decision = AssignBulge((*graph.haplo_map_)[first_e->getLabel()], (*graph.haplo_map_)[second_e->getLabel()]);
                     if (decision == haplo_to_remove)
-                        deleteEdgeHaplo(graph, first_e->getId(), haplotypes);
+                        deleteEdgeHaplo(graph, first_e->getId(), haplotypes, logger);
 //                        graph.deleteEdgeById(first_e->getId());
                     else
-                        deleteEdgeHaplo(graph, second_e->getId(), haplotypes);
+                        deleteEdgeHaplo(graph, second_e->getId(), haplotypes, logger);
 
 //                    graph.deleteEdgeById(second_e->getId());
                     changed = true;
@@ -175,7 +181,7 @@ void removeHaplotype(haplo_map_type &haplotypes, multigraph::MultiGraph &graph, 
                         continue;
                     }
                     removed_len += graph.edges[eid]->size();
-                    deleteEdgeHaplo(graph, eid, haplotypes);
+                    deleteEdgeHaplo(graph, eid, haplotypes, logger);
 
 //                    graph.deleteEdgeById(eid);
                     logger.trace() << "removing " << eid  << " label " << label << endl;
@@ -230,7 +236,7 @@ std::experimental::filesystem::path simplifyHaplo(logging::Logger &logger, size_
     removeHaplotype(haplotypes, mg, haplotype, logger);
     cout << "removed \n";
     mg.printEdgeGFA(out_dir / "before_clean.gfa", true);
-    cleanGraph(mg, haplotype, haplotypes);
+    cleanGraph(mg, haplotype, haplotypes, logger);
     cout << "cleaned \n";
     mg.printEdgeGFA(out_dir / "after_clean.gfa", true);
     mg.printEdgeGFA(output_file, true);
