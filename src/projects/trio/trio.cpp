@@ -33,16 +33,12 @@ void deleteEdgeHaplo(multigraph::MultiGraph &graph, int eid, haplo_map_type &hap
     logger.debug() << "Removing " << eid << endl; 
     auto to_merge = graph.deleteEdgeById(eid);
     for (auto p: to_merge){
-        logger.debug() << "new_label " << p.first << endl;
-        for (auto l: p.second) {
-            logger.debug() << l << " ";
-        }
-        logger.debug() << endl;
         HaplotypeStats new_haplo(haplotypes[p.second[0]]);
         new_haplo.label = p.first;
         haplotypes.insert(std::make_pair(p.first, new_haplo));
-        for (size_t i = 1; i < p.second.size(); i++)
-            haplotypes[p.first].appendKmerStats(p.second[i]);
+        for (size_t i = 1; i < p.second.size(); i++) {
+            haplotypes[p.first].appendKmerStats(haplotypes[p.second[i]]);
+        }
     }
 }
 
@@ -234,7 +230,7 @@ std::experimental::filesystem::path simplifyHaplo(logging::Logger &logger, size_
     for (auto p: haplotypes)
         logger.debug() << p.second.label << " " << p.second.haplotype << endl;
     removeHaplotype(haplotypes, mg, haplotype, logger);
-    cout << "removed \n";
+    logger.debug() << "removed \n";
     mg.printEdgeGFA(out_dir / "before_clean.gfa", true);
     cleanGraph(mg, haplotype, haplotypes, logger);
     cout << "cleaned \n";
