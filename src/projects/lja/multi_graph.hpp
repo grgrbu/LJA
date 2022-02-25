@@ -460,7 +460,7 @@ namespace multigraph {
                 std::vector<std::string> patched_old;
                 for (auto comp_edge: p.second) {
                     if (res.find(comp_edge) != res.end()) {
-                        patched_old.insert(patched_old.end(), p.second.begin(), p.second.end());
+                        patched_old.insert(patched_old.end(), res[comp_edge].begin(), res[comp_edge].end());
                     } else
                         patched_old.push_back(comp_edge);
                 }
