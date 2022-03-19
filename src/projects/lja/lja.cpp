@@ -381,7 +381,23 @@ int main(int argc, char **argv) {
     io::Library lib = oneline::initialize<std::experimental::filesystem::path>(parser.getListValue("reads"));
     io::Library paths = oneline::initialize<std::experimental::filesystem::path>(parser.getListValue("paths"));
     
-    logger.info() << "Library paths initialized \n";
+    logger.info() << "! Library paths initialized \n";
   
+    io::Library ref_lib = oneline::initialize<std::experimental::filesystem::path>(parser.getListValue("ref"));
+    if(!io::CheckLibrary(lib + paths +ref_lib)) {
+        exit(1);
+    }
+    ref = io::SeqReader(ref_lib).readAllContigs();
+    size_t k = std::stoi(parser.getValue("k-mer-size"));
+    size_t w = std::stoi(parser.getValue("window"));
+    size_t K = std::stoi(parser.getValue("K-mer-size"));
+    size_t W = std::stoi(parser.getValue("Window"));
+    size_t KmDBG = std::stoi(parser.getValue("KmDBG"));
+    size_t unique_threshold = std::stoi(parser.getValue("unique-threshold"));
+
+    std::vector<std::experimental::filesystem::path> corrected_final;
+    
+    logger.info() << "! got corrected_final \n";
+
     return 0;
 }
