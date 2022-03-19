@@ -398,6 +398,11 @@ int main(int argc, char **argv) {
     std::vector<std::experimental::filesystem::path> corrected_final;
     
     logger.info() << "! got corrected_final \n";
+  
+    corrected_final = NoCorrection(logger, dir / ("k" + itos(K)), lib, {}, paths, threads, K, W, 
+                                   skip, debug=true, load);
+    
+    
 
     return 0;
 }
