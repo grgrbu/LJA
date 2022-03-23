@@ -242,6 +242,40 @@ std::vector<std::experimental::filesystem::path> SecondPhase(
     return {res, dir / "final_dbg.fasta", dir / "final_dbg.aln"};
 }
 
+std::vector<std::experimental::filesystem::path> GetFinalPrint(
+        logging::Logger &logger, const std::experimental::filesystem::path &dir,
+        const io::Library &reads_lib, const io::Library &pseudo_reads_lib,
+        const io::Library &paths_lib, size_t threads, size_t k, size_t w, double threshold, double reliable_coverage,
+        size_t unique_threshold, bool diploid, bool skip, bool debug, bool load) {
+    logger.info() << "GetFinalPrint;   k = " << k << std::endl;
+
+
+    ensure_dir_existance(dir);
+    hashing::RollingHash hasher(k, 239);
+    std::function<void()> ic_task = [&dir, &logger, &hasher, load, k, w,
+            &reads_lib, &pseudo_reads_lib, &paths_lib,
+            threads, threshold, reliable_coverage,
+            debug, unique_threshold, diploid]
+    {
+        io::Library construction_lib = reads_lib + pseudo_reads_lib;
+        SparseDBG dbg =
+                load ? DBGPipeline(logger, hasher, w, reads_lib, dir, threads,
+                                   (dir/"disjointigs.fasta").string(),
+                                   (dir/"vertices.save").string())
+                     : DBGPipeline(logger, hasher, w, reads_lib, dir, threads);
+        dbg.fillAnchors(w, logger, threads);
+        size_t extension_size = 10000000;
+        ReadLogger readLogger(threads, dir/"read_log.txt");
+        RecordStorage readStorage(dbg, 0, extension_size, threads, readLogger, true, debug);
+        RecordStorage refStorage(dbg, 0, extension_size, threads, readLogger, false, false);
+        io::SeqReader reader(reads_lib);
+        readStorage.fill(reader.begin(), reader.end(), dbg, w + k - 1, logger, threads);
+
+        DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
+        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, false);
+    }
+}
+
 std::vector<std::experimental::filesystem::path> MDBGPhase(
         logging::Logger &logger, size_t threads, size_t k, size_t kmdbg, size_t w, size_t unique_threshold, bool diploid,
         const std::experimental::filesystem::path &dir,
@@ -396,11 +430,35 @@ int main(int argc, char **argv) {
     size_t unique_threshold = std::stoi(parser.getValue("unique-threshold"));
 
     std::vector<std::experimental::filesystem::path> corrected_final;
+    if(noec) {
+        corrected_final = NoCorrection(logger, dir / ("k" + itos(K)), lib, {}, paths, threads, K, W,
+                                       skip, debug, load);
+    } else {
+        double threshold = std::stod(parser.getValue("cov-threshold"));
+        double reliable_coverage = std::stod(parser.getValue("rel-threshold"));
+        std::pair<std::experimental::filesystem::path, std::experimental::filesystem::path> corrected1;
+        if (first_stage == "alternative")
+            skip = false;
+        corrected1 = AlternativeCorrection(logger, dir / ("k" + itos(k)), lib, {}, paths, threads, k, w,
+                                           threshold, reliable_coverage, false, false, skip, debug, load);
+        if (first_stage == "alternative" || first_stage == "none")
+            load = false;
+
+        double Threshold = std::stod(parser.getValue("Cov-threshold"));
+        double Reliable_coverage = std::stod(parser.getValue("Rel-threshold"));
+
+        if (first_stage == "phase2")
+            skip = false;
+        corrected_final = SecondPhase(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
+                            threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
+        SecondPhase(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
+                    threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
+        if (first_stage == "phase2")
+            load = false;
+    }
     
-    logger.info() << "! got corrected_final \n";
+    logger.info() << "!  \n";
   
-    corrected_final = NoCorrection(logger, dir / ("k" + itos(K)), lib, {}, paths, threads, K, W, 
-                                   skip, debug=true, load);
     
     
 
