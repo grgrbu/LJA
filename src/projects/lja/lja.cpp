@@ -396,11 +396,33 @@ int main(int argc, char **argv) {
     size_t unique_threshold = std::stoi(parser.getValue("unique-threshold"));
 
     std::vector<std::experimental::filesystem::path> corrected_final;
+    if(noec) {
+        corrected_final = NoCorrection(logger, dir / ("k" + itos(K)), lib, {}, paths, threads, K, W,
+                                       skip, debug, load);
+    } else {
+        double threshold = std::stod(parser.getValue("cov-threshold"));
+        double reliable_coverage = std::stod(parser.getValue("rel-threshold"));
+        std::pair<std::experimental::filesystem::path, std::experimental::filesystem::path> corrected1;
+        if (first_stage == "alternative")
+            skip = false;
+        corrected1 = AlternativeCorrection(logger, dir / ("k" + itos(k)), lib, {}, paths, threads, k, w,
+                                           threshold, reliable_coverage, false, false, skip, debug, load);
+        if (first_stage == "alternative" || first_stage == "none")
+            load = false;
+
+        double Threshold = std::stod(parser.getValue("Cov-threshold"));
+        double Reliable_coverage = std::stod(parser.getValue("Rel-threshold"));
+
+        if (first_stage == "phase2")
+            skip = false;
+        corrected_final = SecondPhase(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
+                            threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
+        if (first_stage == "phase2")
+            load = false;
+    }
     
-    logger.info() << "! got corrected_final \n";
+    logger.info() << "!  \n";
   
-    corrected_final = NoCorrection(logger, dir / ("k" + itos(K)), lib, {}, paths, threads, K, W, 
-                                   skip, debug=true, load);
     
     
 
