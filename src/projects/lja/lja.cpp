@@ -256,7 +256,7 @@ std::vector<std::experimental::filesystem::path> GetFinalPrint(
             &reads_lib, &pseudo_reads_lib, &paths_lib,
             threads, threshold, reliable_coverage,
             debug, unique_threshold, diploid]
-    {
+            {
         io::Library construction_lib = reads_lib + pseudo_reads_lib;
         SparseDBG dbg =
                 load ? DBGPipeline(logger, hasher, w, reads_lib, dir, threads,
@@ -273,7 +273,7 @@ std::vector<std::experimental::filesystem::path> GetFinalPrint(
 
         DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
         PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, false);
-    }
+    };
 }
 
 std::vector<std::experimental::filesystem::path> MDBGPhase(
