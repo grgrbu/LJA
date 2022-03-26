@@ -242,7 +242,7 @@ std::vector<std::experimental::filesystem::path> SecondPhase(
     return {res, dir / "final_dbg.fasta", dir / "final_dbg.aln"};
 }
 
-std::vector<std::experimental::filesystem::path> GetFinalPrint(
+void GetFinalPrint(
         logging::Logger &logger, const std::experimental::filesystem::path &dir,
         const io::Library &reads_lib, const io::Library &pseudo_reads_lib,
         const io::Library &paths_lib, size_t threads, size_t k, size_t w, double threshold, double reliable_coverage,
@@ -272,7 +272,7 @@ std::vector<std::experimental::filesystem::path> GetFinalPrint(
         readStorage.fill(reader.begin(), reader.end(), dbg, w + k - 1, logger, threads);
 
         DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
-        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, false);
+        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, true);
     };
 }
 
