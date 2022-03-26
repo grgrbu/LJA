@@ -451,7 +451,7 @@ int main(int argc, char **argv) {
             skip = false;
         corrected_final = SecondPhase(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
                             threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
-        SecondPhase(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
+        GetFinalPrint(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
                     threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
         if (first_stage == "phase2")
             load = false;
