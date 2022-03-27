@@ -26,6 +26,7 @@ static size_t stage_num = 0;
 std::vector<Contig> ref;
 void PrintPaths(logging::Logger &logger, const std::experimental::filesystem::path &dir, const std::string &stage,
                 SparseDBG &dbg, RecordStorage &readStorage, const io::Library &paths_lib, bool small) {
+    logger.info() << "Entered PrintPaths \n";
     stage_num += 1;
     std::string stage_name = itos(stage_num) + "_" + stage;
     logger.info() << "Dumping current state. Stage id: " << stage_name << std::endl;
@@ -54,6 +55,7 @@ void PrintPaths(logging::Logger &logger, const std::experimental::filesystem::pa
         Component comp = small ? Component::neighbourhood(dbg, contig, dbg.hasher().getK() + 500) :
                 Component::longEdgeNeighbourhood(dbg, contig, 20000);
         std::function<std::string(Edge &)> labeler = readStorage.labeler() + storage.labeler();
+        logger.info() << "In PrintPaths loop  \n";
         printDot(dir / "paths" / contig.getId() / (stage_name + ".dot"), comp, labeler);
     }
     std::ofstream ref_os;
