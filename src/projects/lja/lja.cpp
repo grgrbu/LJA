@@ -274,6 +274,7 @@ void GetFinalPrint(
         DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
         PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, true);
     };
+    runInFork(ic_task);
 }
 
 std::vector<std::experimental::filesystem::path> MDBGPhase(
