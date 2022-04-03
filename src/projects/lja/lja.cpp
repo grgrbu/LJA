@@ -34,11 +34,11 @@ void PrintPaths(logging::Logger &logger, const std::experimental::filesystem::pa
     ensure_dir_existance(dir / "paths");
     printDot(dir / (stage_name + ".dot"), Component(dbg), readStorage.labeler());
     dbg.printFastaOld(dir / (stage_name + ".fasta"));
-    if(!small)
-        readStorage.printFullAlignments(logger, dir / (stage_name + ".als"));
+    readStorage.printFullAlignments(logger, dir / (stage_name + ".als"));
     std::vector<Contig> paths;
     for(StringContig sc : io::SeqReader(paths_lib)) {
         Contig contig = sc.makeContig();
+        logger.info() << "Confif size " << contig.size() << "\n";
         if(contig.size() > 100000) {
             paths.emplace_back(contig.seq.Subseq(0, 50000), contig.id + "_start");
             paths.emplace_back(contig.seq.Subseq(contig.size() - 50000), contig.id + "_end");
