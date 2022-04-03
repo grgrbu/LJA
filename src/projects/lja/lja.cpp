@@ -274,7 +274,7 @@ void GetFinalPrint(
         readStorage.fill(reader.begin(), reader.end(), dbg, w + k - 1, logger, threads);
 
         DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
-        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, true);
+        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, false);
     };
     runInFork(ic_task);
 }
