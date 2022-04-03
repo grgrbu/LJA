@@ -470,8 +470,8 @@ int main(int argc, char **argv) {
                            lib, StringContig::max_dimer_size / 2, K, skip, debug);
     if(first_stage == "polishing")
         load = false;
-    GetFinalPrint(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
-                  threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
+//    GetFinalPrint(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
+//                  threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
 
     logger.info() << "Final homopolymer compressed and corrected reads can be found here: " << corrected_final[0] << std::endl;
     logger.info() << "Final graph with homopolymer compressed edges can be found here: " << resolved[1] << std::endl;
