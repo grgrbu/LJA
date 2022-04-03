@@ -38,7 +38,7 @@ void PrintPaths(logging::Logger &logger, const std::experimental::filesystem::pa
     std::vector<Contig> paths;
     for(StringContig sc : io::SeqReader(paths_lib)) {
         Contig contig = sc.makeContig();
-        logger.info() << "Confif size " << contig.size() << "\n";
+        logger.info() << "Config size " << contig.size() << "\n";
         if(contig.size() > 100000) {
             paths.emplace_back(contig.seq.Subseq(0, 50000), contig.id + "_start");
             paths.emplace_back(contig.seq.Subseq(contig.size() - 50000), contig.id + "_end");
@@ -417,9 +417,6 @@ int main(int argc, char **argv) {
 
     io::Library lib = oneline::initialize<std::experimental::filesystem::path>(parser.getListValue("reads"));
     io::Library paths = oneline::initialize<std::experimental::filesystem::path>(parser.getListValue("paths"));
-    
-    logger.info() << "! Library paths initialized \n";
-  
     io::Library ref_lib = oneline::initialize<std::experimental::filesystem::path>(parser.getListValue("ref"));
     if(!io::CheckLibrary(lib + paths +ref_lib)) {
         exit(1);
@@ -453,13 +450,35 @@ int main(int argc, char **argv) {
         if (first_stage == "phase2")
             skip = false;
         corrected_final = SecondPhase(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
-                            threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
-        GetFinalPrint(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
-                    threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
+                                      threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
         if (first_stage == "phase2")
             load = false;
     }
-    
+    if(first_stage == "rr")
+        skip = false;
+    std::vector<std::experimental::filesystem::path> resolved =
+            MDBGPhase(logger, threads, K, KmDBG, W, unique_threshold, diploid, dir / "mdbg", corrected_final[1],
+                      corrected_final[2], skip, debug);
+    if(first_stage == "rr")
+        load = false;
+
+    if(first_stage == "polishing")
+        skip = false;
+    std::vector<std::experimental::filesystem::path> uncompressed_results =
+            PolishingPhase(logger, threads, dir/ "uncompressing", dir, resolved[1],
+                           corrected_final[0],
+                           lib, StringContig::max_dimer_size / 2, K, skip, debug);
+    if(first_stage == "polishing")
+        load = false;
+    GetFinalPrint(logger, dir / ("k" + itos(K)), {corrected1.first}, {corrected1.second}, paths,
+                  threads, K, W, Threshold, Reliable_coverage, unique_threshold, diploid, skip, debug, load);
+
+    logger.info() << "Final homopolymer compressed and corrected reads can be found here: " << corrected_final[0] << std::endl;
+    logger.info() << "Final graph with homopolymer compressed edges can be found here: " << resolved[1] << std::endl;
+    logger.info() << "Final graph can be found here: " << uncompressed_results[1] << std::endl;
+    logger.info() << "Final assembly can be found here: " << uncompressed_results[0] << std::endl;
+    logger.info() << "LJA pipeline finished" << std::endl;
+
     logger.info() << "!  \n";
   
     
