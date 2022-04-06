@@ -150,9 +150,9 @@ std::vector<std::experimental::filesystem::path> NoCorrection(logging::Logger &l
         io::SeqReader reader(reads_lib);
         readStorage.fill(reader.begin(), reader.end(), dbg, w + k - 1, logger, threads);
         coverageStats(logger, dbg);
-        if(debug) {
-            PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, true);
-        }
+
+        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, true);
+
         dbg.printFastaOld(dir / "final_dbg.fasta");
         printDot(dir / "final_dbg.dot", Component(dbg), readStorage.labeler());
         printGFA(dir / "final_dbg.gfa", Component(dbg), true);
@@ -196,10 +196,10 @@ std::vector<std::experimental::filesystem::path> SecondPhase(
         RecordStorage refStorage(dbg, 0, extension_size, threads, readLogger, false, false);
         io::SeqReader reader(reads_lib);
         readStorage.fill(reader.begin(), reader.end(), dbg, w + k - 1, logger, threads);
-        if(debug) {
-            DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
-            PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, false);
-        }
+
+        DrawSplit(Component(dbg), dir / "before_figs", readStorage.labeler(), 25000);
+        PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, false);
+
         initialCorrect(dbg, logger, dir / "correction.txt", readStorage, refStorage,
                        threshold, 2 * threshold, reliable_coverage, threads, false);
 
