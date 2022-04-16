@@ -490,8 +490,14 @@ void RecordStorage::printFullAlignments(logging::Logger &logger, const std::expe
         if(!al.valid())
             continue;
         os << "read.id " << read.id;
+
+        Path path = read.path.getPath();
+        for (auto edge : path.path) {
+            os << edge.id << " ";
+        }
+
         os << "\n";
-        os << read.path << "\n";
+//        os << read.path << "\n";
 //        os << read.id << " " << read.path.getAlignment().str(true) << "\n";
 //        os << "-" << read.id << " " << read.path.getAlignment().RC().str(true) << "\n";
     }

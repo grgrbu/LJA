@@ -5,8 +5,8 @@ namespace dbg {
     class Path {
     private:
         Vertex *start_;
-        std::vector<Edge *> path;
     public:
+        std::vector<Edge *> path;
         typedef typename std::vector<Edge *>::iterator iterator;
         typedef typename std::vector<Edge *>::const_iterator const_iterator;
 
