@@ -493,7 +493,7 @@ void RecordStorage::printFullAlignments(logging::Logger &logger, const std::expe
 
         std::vector<Edge *> path = read.path.getPathVector();
         for (auto edge : path) {
-            os << edge.id << " ";
+            os << edge->id << " ";
         }
 
         os << "\n";
