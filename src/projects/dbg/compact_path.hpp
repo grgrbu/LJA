@@ -131,7 +131,9 @@ namespace dbg {
 }
 inline std::ostream& operator<<(std::ostream  &os, const dbg::CompactPath &cpath) {
     if(cpath.valid()) {
-        for (auto edge: cpath._edges) {
+
+        for(size_t i = 0; i < _edges.size(); i++) {
+            Edge &edge = _edges[i];
             os << edge << " ";
         }
         os << "\n";
