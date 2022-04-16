@@ -9,10 +9,10 @@ namespace dbg {
     class CompactPath {
     private:
         Vertex *_start;
-        Sequence _edges;
         size_t _first_skip;
         size_t _last_skip;
     public:
+        Sequence _edges;
         CompactPath() : _start(nullptr), _first_skip(0), _last_skip(0) {
         }
 
