@@ -130,12 +130,14 @@ namespace dbg {
     };
 }
 inline std::ostream& operator<<(std::ostream  &os, const dbg::CompactPath &cpath) {
-    if(cpath.valid())
-        for (auto edge : cpath._edges) {
+    if(cpath.valid()) {
+        for (auto edge: cpath._edges) {
             os << edge << " ";
         }
         os << "\n";
-        return os << cpath.start().hash() << " " << cpath.start().isCanonical() << " P:" << cpath.cpath() << " " << cpath.leftSkip() << " " << cpath.rightSkip();
-    else
+        return os << cpath.start().hash() << " " << cpath.start().isCanonical() << " P:" << cpath.cpath() << " "
+                  << cpath.leftSkip() << " " << cpath.rightSkip();
+    } else {
         return os << "0 0 P: 0 0";
+    }
 }
