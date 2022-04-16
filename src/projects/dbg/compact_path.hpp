@@ -79,19 +79,17 @@ namespace dbg {
             }
             return {*_start, std::move(path)};
         }
-//
-//        Path getPathPrint() const {
-//            std::vector<Edge *> path;
-//            Vertex *cur = _start;
-//            for(size_t i = 0; i < _edges.size(); i++) {
-//                Edge &edge = cur->getOutgoing(_edges[i]);
-//                cout << edge.id << " ";
-//                path.emplace_back(&edge);
-//                cur = edge.end();
-//            }
-//            os << "\n";
-//            return {*_start, std::move(path)};
-//        }
+
+        std::vector<Edge *>getPathVector() const {
+            std::vector<Edge *> path;
+            Vertex *cur = _start;
+            for(size_t i = 0; i < _edges.size(); i++) {
+                Edge &edge = cur->getOutgoing(_edges[i]);
+                path.emplace_back(&edge);
+                cur = edge.end();
+            }
+            return path;
+        }
 
         CompactPath RC() const {
             if (!valid())
