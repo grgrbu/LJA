@@ -133,8 +133,9 @@ inline std::ostream& operator<<(std::ostream  &os, const dbg::CompactPath &cpath
     if(cpath.valid()) {
 
         for(size_t i = 0; i < cpath._edges.size(); i++) {
-            dbg::Edge edge = cpath[i];
-            os << edge.id << " ";
+//            dbg::Edge edge = cpath[i];
+//            os << edge.id << " ";
+            os << cpath[i] << " ";
         }
         os << "\n";
         return os << cpath.start().hash() << " " << cpath.start().isCanonical() << " P:" << cpath.cpath() << " "
