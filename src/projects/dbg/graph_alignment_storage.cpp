@@ -495,7 +495,7 @@ void RecordStorage::printFullAlignments(logging::Logger &logger, const std::expe
         os << "vec size: " << path.size();
 
         for (auto edge : path) {
-            os << edge->id << " ";
+            os << (*edge).id << " ";
         }
 
         os << "\n";
