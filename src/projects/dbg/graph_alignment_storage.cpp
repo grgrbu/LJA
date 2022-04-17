@@ -497,7 +497,7 @@ void RecordStorage::printFullAlignments(logging::Logger &logger, const std::expe
         os << "type: " << typeid(path[0]).name() << "\n";
 
         for(size_t i = 0; i < path.size(); i++) {
-            os << path[i].getId() << " ";
+            os << i << " " << (*path[i]).getId() << " ";
         }
 //        for (auto edge : path) {
 //            os << (*edge).id << " ";
