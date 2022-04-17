@@ -489,9 +489,11 @@ void RecordStorage::printFullAlignments(logging::Logger &logger, const std::expe
         const CompactPath &al = read.path;
         if(!al.valid())
             continue;
-        os << "read.id " << read.id;
+        os << "read.id " << read.id << "\n";
 
         std::vector<Edge *> path = read.path.getPathVector();
+        os << "vec size: " << path.size();
+
         for (auto edge : path) {
             os << edge->id << " ";
         }
