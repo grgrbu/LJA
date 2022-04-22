@@ -153,6 +153,8 @@ std::vector<std::experimental::filesystem::path> NoCorrection(logging::Logger &l
 
         PrintPaths(logger, dir / "state_dump", "initial", dbg, readStorage, paths_lib, true);
 
+        logger.info() << "Print before final_dbg" << std::endl;
+
         dbg.printFastaOld(dir / "final_dbg.fasta");
         printDot(dir / "final_dbg.dot", Component(dbg), readStorage.labeler());
         printGFA(dir / "final_dbg.gfa", Component(dbg), true);
@@ -224,6 +226,7 @@ std::vector<std::experimental::filesystem::path> SecondPhase(
         dbg.printFastaOld(dir / "final_dbg.fasta");
         printDot(dir / "final_dbg.dot", Component(dbg), readStorage.labeler());
         printGFA(dir / "final_dbg.gfa", Component(dbg), true);
+        PrintPaths(logger, dir/ "state_dump", "nname", dbg, readStorage, paths_lib, false);
         SaveAllReads(dir/"final_dbg.aln", {&readStorage, &extra_reads});
         readStorage.printReadFasta(logger, dir / "corrected_reads.fasta");
     };
